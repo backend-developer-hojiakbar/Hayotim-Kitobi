@@ -14,18 +14,39 @@ import ProcessingView from './components/ProcessingView';
 import BookPreview from './components/BookPreview';
 import Auth from './components/Auth';
 import Settings from './components/Settings';
+import GenreSelection from './components/GenreSelection';
 
 export default function App() {
-  const [step, setStep] = useState<AppStep>('hero');
+  const [step, setStep] = useState<AppStep>('auth');
   const [user, setUser] = useState<User | null>(null);
-  const [memories, setMemories] = useState<Memory[]>([]);
-  const [selectedCover, setSelectedCover] = useState<string | undefined>(undefined);
+  const [memories, setMemories] = useState<Memory[]>(() => {
+    const saved = localStorage.getItem('hayotim_kitobi_memories');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectedCover, setSelectedCover] = useState<string | undefined>(() => {
+    return localStorage.getItem('hayotim_kitobi_cover') || undefined;
+  });
+  const [selectedGenre, setSelectedGenre] = useState<string>('biography');
+  const [customGenreDescription, setCustomGenreDescription] = useState<string>('');
   const [bookContent, setBookContent] = useState<BookContent | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('hayotim_kitobi_memories', JSON.stringify(memories));
+  }, [memories]);
+
+  useEffect(() => {
+    if (selectedCover) {
+      localStorage.setItem('hayotim_kitobi_cover', selectedCover);
+    } else {
+      localStorage.removeItem('hayotim_kitobi_cover');
+    }
+  }, [selectedCover]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('hayotim_kitobi_current_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
+      setStep('genre-selection');
     }
   }, []);
 
@@ -42,7 +63,7 @@ export default function App() {
   const handleAuthComplete = (newUser: User) => {
     setUser(newUser);
     localStorage.setItem('hayotim_kitobi_current_user', JSON.stringify(newUser));
-    setStep('collection');
+    setStep('genre-selection');
   };
 
   const handleUpdateUser = (updatedUser: User) => {
@@ -61,25 +82,29 @@ export default function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('hayotim_kitobi_current_user');
-    setStep('hero');
+    setStep('auth');
     setMemories([]);
     setSelectedCover(undefined);
     setBookContent(null);
+    setSelectedGenre('biography');
+    setCustomGenreDescription('');
   };
 
   const handleStart = () => {
-    if (user) {
-      setStep('collection');
-    } else {
-      setStep('auth');
-    }
+    setStep('collection');
+  };
+
+  const handleGenreSelect = (genre: string, description?: string) => {
+    setSelectedGenre(genre);
+    if (description) setCustomGenreDescription(description);
+    setStep('hero');
   };
 
   const handleGenerateBook = async () => {
     if (!user) return;
     setStep('processing');
     try {
-      const content = await generateBook(memories, user);
+      const content = await generateBook(memories, user, selectedGenre, customGenreDescription);
       setBookContent({ ...content, coverImage: selectedCover });
       setStep('preview');
     } catch (error) {
@@ -89,10 +114,14 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setStep('hero');
+    localStorage.removeItem('hayotim_kitobi_memories');
+    localStorage.removeItem('hayotim_kitobi_cover');
+    setStep('genre-selection');
     setMemories([]);
     setSelectedCover(undefined);
     setBookContent(null);
+    setSelectedGenre('biography');
+    setCustomGenreDescription('');
   };
 
   return (
@@ -102,7 +131,7 @@ export default function App() {
           <div className="w-8 h-8 bg-warm-brown rounded-full flex items-center justify-center">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-semibold tracking-tight font-serif">Hayotim Kitobi</span>
+          <span className="text-lg font-semibold tracking-tight font-serif">Hayotim Kitobi</span>
         </div>
         
         <div className="flex items-center space-x-6">
@@ -148,18 +177,24 @@ export default function App() {
           </motion.div>
         )}
 
+        {step === 'genre-selection' && (
+          <motion.div key="genre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <GenreSelection onSelect={handleGenreSelect} />
+          </motion.div>
+        )}
+
         {step === 'hero' && (
           <motion.div key="hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Hero onStart={handleStart} user={user} />
           </motion.div>
         )}
-
+        
         {step === 'settings' && user && (
           <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Settings 
               user={user} 
               onUpdateUser={handleUpdateUser} 
-              onBack={() => setStep('hero')} 
+              onBack={() => setStep('genre-selection')} 
             />
           </motion.div>
         )}

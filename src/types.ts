@@ -19,6 +19,7 @@ export interface User {
 export interface Memory {
   id: string;
   text: string;
+  imageUrl?: string;
   timestamp: number;
 }
 
@@ -29,7 +30,15 @@ export interface BookContent {
   chapters: {
     title: string;
     content: string;
+    images?: string[];
   }[];
 }
 
-export type AppStep = 'auth' | 'hero' | 'collection' | 'processing' | 'preview' | 'settings';
+export interface Genre {
+  id: string;
+  label: string;
+  description: string;
+  icon: string;
+}
+
+export type AppStep = 'auth' | 'hero' | 'collection' | 'genre-selection' | 'processing' | 'preview' | 'settings';

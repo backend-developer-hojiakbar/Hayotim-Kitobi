@@ -30,7 +30,7 @@ export default function Hero({ onStart, user }: HeroProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-5xl md:text-7xl font-light tracking-tight text-deep-blue leading-tight"
+          className="text-4xl md:text-6xl font-light tracking-tight text-deep-blue leading-tight"
         >
           {user ? `Salom, ${user.firstName}!` : 'Sizning hayotingiz —'} <br />
           <span className="italic font-serif text-warm-brown">
@@ -42,7 +42,7 @@ export default function Hero({ onStart, user }: HeroProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-lg text-[#64748B] max-w-2xl mx-auto font-light leading-relaxed"
+          className="text-base text-[#64748B] max-w-2xl mx-auto font-light leading-relaxed"
         >
           Xotiralaringizni qog'ozga tushiring, AI ularni abadiy durdonaga aylantiradi.
         </motion.p>
@@ -56,7 +56,7 @@ export default function Hero({ onStart, user }: HeroProps) {
       >
         <button
           onClick={onStart}
-          className="px-10 py-5 bg-deep-blue text-white rounded-2xl text-xl font-medium shadow-2xl hover:bg-warm-brown transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-3 mx-auto group"
+          className="px-10 py-5 bg-deep-blue text-white rounded-2xl text-lg font-medium shadow-2xl hover:bg-warm-brown transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-3 mx-auto group"
         >
           <span>Kitobni yozishni boshlash</span>
           <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />

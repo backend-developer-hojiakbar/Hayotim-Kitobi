@@ -127,7 +127,7 @@ export default function Auth({ onAuthComplete }: AuthProps) {
         className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-border-beige"
       >
         <div className="text-center mb-8 space-y-2">
-          <h2 className="text-3xl font-serif text-deep-blue">
+          <h2 className="text-2xl font-serif text-deep-blue">
             {isLogin ? 'Xush kelibsiz' : 'Ro\'yxatdan o\'tish'}
           </h2>
           <p className="text-sm text-[#64748B] font-light">
